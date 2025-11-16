@@ -1,112 +1,119 @@
-CodeGen Agent – AgentCore POC Setup & Run Guide
+# CodeGen Agent – AgentCore POC Setup & Run Guide
 
-1. Project Structure
+## 1. Project Structure
+
+```
 Projects/
 └── AI/
     ├── code_gen_agent.py
     ├── venv/         (Python env for development)
     └── vagent/       (Python env for AgentCore runtime)
+```
 
-2. Activate Environments
+## 2. Activate Environments
 
 Activate development environment:
-
+```
 source venv/Scripts/activate
-
+```
 
 Activate AgentCore environment:
-
+```
 source vagent/Scripts/activate
+```
 
-3. Configure & Launch the CodeGen Agent
+## 3. Configure & Launch the CodeGen Agent
 
 Configure the agent:
-
+```
 agentcore configure -e code_gen_agent.py
+```
 
-
-Launch the agent runtime:
-
+Launch the runtime:
+```
 agentcore launch
+```
 
-Why We Switched from S3 Direct Code Deploy to Docker Container Deploy
+## 4. Why We Switched from S3 Direct Code Deploy to Docker Container Deploy
 
-Originally, we attempted Direct Code Deploy (S3-based deployment).
-However, this approach failed because:
+Initially we attempted Direct Code Deploy (S3-based deployment).  
+However, this approach failed due to package size limitations.
 
-The code_gen agent environment had multiple Python dependencies, especially:
+### Root Cause
+The CodeGen Agent uses several heavy Python dependencies, including:
 
-boto3
+- boto3  
+- bedrock_agentcore  
+- strands  
+- fastapi / pydantic  
+- other utilities  
 
-bedrock_agentcore
+These made the deployment bundle exceed the size allowed for S3 direct deployment.
 
-strands
+### AgentCore Behavior
+AgentCore automatically detected that the code bundle was too large and fell back to container-based deployment.
 
-fastapi/pydantic imports
+### Why Docker Deployment Works
+Docker containers overcome these limitations because they:
+- support large dependencies  
+- can include native binaries  
+- can ship compiled wheels  
+- allow bigger project sizes  
+- offer predictable startup environments  
 
-utility packages
+### Summary
+**S3 Direct Deploy fails due to size limits. Docker deploy succeeds because it supports larger, dependency-heavy codebases.**
 
-These dependencies pushed the package size beyond the limit allowed for S3-based direct deployment.
+## 5. Error Fixes During Setup
 
-AgentCore fallback logic automatically detected that the code bundle exceeded what S3 Direct Deploy can handle and switched to container-based deployment.
-
-Container deployment solves this because Docker images can hold:
-
-Large dependencies
-
-Native binaries
-
-Compiled wheels
-
-Larger project sizes without restrictions
-
-Therefore, Docker container deployment became the only reliable path for hosting the CodeGen Agent with all its required libraries.
-
-In short:
-Direct S3 Deploy fails due to size constraints. Docker deploy succeeds because it supports larger, dependency-heavy codebases.
-
-Error Fixes During Setup
-Error 1: Missing uv
+### Error 1 — Missing `uv`
+```
 Warning: Direct Code Deploy deployment unavailable (uv not found).
+```
 
 Fix:
+```
 pip install uv
+```
 
-Error 2: Missing zip Utility
+### Error 2 — Missing `zip` Utility
+```
 Warning: Direct Code Deploy deployment unavailable (zip utility not found).
-
-Fix:
+```
 
 Install GnuWin32 Zip:
-
+```
 winget install GnuWin32.Zip
+```
 
-
-Add the binary to PATH:
-
+Add binary to PATH:
+```
 export PATH="$PATH:/c/PROGRA~2/GnuWin32/bin"
+```
 
-4. Test Payload
+## 6. Test Payload
+
+```
 {
   "requirement": "Create a simple FastAPI service with one GET /health endpoint.",
   "language": "python"
 }
+```
 
-Runtime Initialization Timeout Error
+## 7. Runtime Initialization Timeout Error
+
+```
 Unable to invoke endpoint successfully:
 Runtime initialization time exceeded.
+```
 
+This means the CodeGen Agent didn’t initialize within the 60s startup window.
 
-This means the CodeGen Agent is not completing startup within the 60s initialization window.
+### Common Causes
+- Heavy imports at global scope  
+- Too many dependencies  
+- Slow initialization logic  
+- Missing or misplaced entrypoint  
+  (`if __name__ == "__main__": app.run()`)  
+- Non-optimized container base image  
 
-Typical causes:
-
-Heavy imports or slow initialization logic
-
-Too many dependencies loaded at global scope
-
-Missing or misplaced entrypoint (if __name__ == "__main__": app.run())
-
-Runtime container not optimized
-
-Share your latest code_gen_agent.py if you want me to optimize and fix the startup time.
