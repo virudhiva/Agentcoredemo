@@ -1,0 +1,5 @@
+venv
+app/.bed*
+app/.docker*
+app/backup*
+app/.env
