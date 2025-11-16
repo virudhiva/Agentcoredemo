@@ -3,3 +3,4 @@ app/.bed*
 app/.docker*
 app/backup*
 app/.env
+app/assets
