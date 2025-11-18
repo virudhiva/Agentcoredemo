@@ -8,3 +8,6 @@
 ![Step 6](assets/step6.png)
 ![Step 7](assets/step7.png)
 ![Step 8](assets/step8.png)
+Design changes
+![Step 9](assets/step9.png)
+![Step 10](assets/step10.png)
