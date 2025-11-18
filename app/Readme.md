@@ -1,3 +1,5 @@
+## **Code Generation & Update Workflow — High-Level Summary**
+
 1. User submits a **requirement** (new project) or **change request** (existing project) via **AgentCore**.
 2. Requirement is **chunked** and **summarized**; summaries are merged into a single **Global Project Spec**.
 3. The model generates a structured **multi-file plan** (file **paths** + **roles**) based on **language/framework**.
