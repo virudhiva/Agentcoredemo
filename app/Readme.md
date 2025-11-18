@@ -1,12 +1,18 @@
-## **Code Generation & Update Workflow — High-Level Summary**
+# 📘 Code Gen — High-Level Working Flow
 
-1. User submits a **requirement** (new project) or **change request** (existing project) via **AgentCore**.
-2. Requirement is **chunked** and **summarized**; summaries are merged into a single **Global Project Spec**.
-3. The model generates a structured **multi-file plan** (file **paths** + **roles**) based on **language/framework**.
-4. For **new projects**, each file is **individually generated** using the global spec and saved to **S3**.
-5. A **snapshot** (files, roles, summaries, globalSpec) is stored for **incremental updates**.
-6. For updates, the request is converted into a **Change Spec JSON** describing **impacted** + **new files**.
-7. **Impacted files** are identified using the change spec (or **fallback relevance scoring**).
-8. Only the impacted files are **regenerated** using **old code + change spec + global spec**.
-9. Any **new files** required by the change spec are generated and appended to the **snapshot**.
-10. The response returns only the **changed/new files** using **<<<FILE:path>>>** blocks.
+Below is the simplified working flow of the **Code Gen Intelligent Code Generator**.
+
+---
+
+## ⭐ Workflow Summary
+
+1. 📝 User submits a **requirement** (new project) or **change request** (update).
+2. ✂️ The input is **chunked** and 🔎 **summarized** into a unified **Global Project Spec**.
+3. 🗂️ The model produces a **multi-file plan** with file **paths** and **roles**.
+4. 🏗️ For **new projects**, each file is generated individually and saved in **S3**.
+5. 🗄️ A **snapshot** is created containing globalSpec, file list, roles, and summaries.
+6. 🔧 For updates, input is converted into a **Change Spec JSON**.
+7. 🎯 Code Gen identifies **impacted files** using structured spec or fallback relevance.
+8. 🔄 Only those impacted files are **regenerated** with updated logic.
+9. ➕ Any additional **new files** required by the change are created and added.
+10. 📤 Final output returns only the **changed / new** files in `<<<FILE:path>>>` format.
