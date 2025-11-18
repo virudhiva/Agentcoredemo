@@ -16,3 +16,11 @@ Below is the simplified working flow of the **Code Gen Intelligent Code Generato
 8. 🔄 Only those impacted files are **regenerated** with updated logic.
 9. ➕ Any additional **new files** required by the change are created and added.
 10. 📤 Final output returns only the **changed / new** files in `<<<FILE:path>>>` format.
+
+### 🚀 Key Problems This Architecture Solves
+
+- 🧱 **Bypasses token-limit failures** through requirement chunking and incremental processing.  
+- ✂️ **Prevents output truncation** by generating each file independently rather than as one massive response.  
+- 🎯 **Improves change accuracy** with file-level impact analysis instead of regenerating the entire project blindly.  
+- 🏗️ **Maintains architectural quality** using global specs, file roles, and code summaries to keep structure consistent.  
+- 🔒 **Avoids context loss** by storing project state in S3 snapshots instead of pushing huge prompts or depending on memory.  
